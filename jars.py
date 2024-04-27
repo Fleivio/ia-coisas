@@ -49,7 +49,7 @@ class Jars():
 
         possible_next = list(map(lambda f: f(state.copy()), ops))
         filtered_next = list(filter(lambda k: self.is_valid(k[0]), possible_next))
-        return possible_next
+        return filtered_next
 
     def run_jars(self):
         return breadth_first.breadth_first(self.initial, self.gen_actions, self.goal)
