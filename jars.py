@@ -23,12 +23,6 @@ class Jars():
         states[i] = max(0, ia - (self.sizes[j] - ja))
 
         return (states, "Transferir de " + str(i) + " para " + str(j) + " ->> " + str(states))
-
-    def is_valid(self, state):
-        for jar, limit in zip(state, self.sizes):
-            if jar < 0 or jar > limit:
-                return False
-        return True
     
     def gen_operators(self):
         operators = []
@@ -48,8 +42,7 @@ class Jars():
         ops = self.gen_operators()
 
         possible_next = list(map(lambda f: f(state.copy()), ops))
-        filtered_next = list(filter(lambda k: self.is_valid(k[0]), possible_next))
-        return filtered_next
+        return possible_next
 
     def run_jars(self):
         return breadth_first.breadth_first(self.initial, self.gen_actions, self.goal)
