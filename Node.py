@@ -9,3 +9,7 @@ class Node():
 
     def __str__(self):
         return str(self.state) + " " + str(self.f)
+
+    def print_node(self):
+        print("State: ", self.state)
+        print("F: ", self.f)

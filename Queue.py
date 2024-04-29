@@ -5,8 +5,9 @@ class Queue:
         self.sortingKey = sortingKey
         self.idKey = idKey
 
-    def __str__(self):
-       return f'{[str(a) for a in self.elements]}'
+    def print_queue(self):
+        for i in self.elements:
+            print(i)
     
     def empty(self):
         return not self.elements

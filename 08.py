@@ -1,41 +1,46 @@
-import searches
+from Runner import Runner
+from Problem import Problem
 
-class Puzzle:
+class Puzzle(Problem):
     def __init__(self, initial, goal):
         self.initial = initial
         self.goal = goal
 
-    def show_state(st):
+    def show_state(self, st):
+        s = ""
         for i in st:
-            print(i)
-        print()
+            s += str(i) + "\n"
+        return s
 
-    def gen_operators(self, state):
+    def show_transition(self, state, new_state):
+        return f"Moved from \n{self.show_state(state)} to\n{self.show_state(new_state)}"
+
+    def next_states(self, state):
         def swap(ls, ms, state):
             (i,j) = ls
             (k,l) = ms
             state[i][j], state[k][l] = state[k][l], state[i][j]
             return state
 
-        operators = []
+        nexts = []
         for l in range(len(self.initial)):
             for c in range(len(self.initial[0])):
                 if l > 0 and state[l-1][c] == ' ':
                     #can move up
-                    operators.append(lambda s, l=l, c=c: swap((l,c), (l-1,c), [row[:] for row in s]))
+                    nexts.append(swap((l,c), (l-1,c), [row[:] for row in state.copy()]))
                 if l < len(self.initial) - 1 and state[l+1][c] == ' ':
                     #can move down
-                    operators.append(lambda s, l=l, c=c: swap((l,c), (l+1,c), [row[:] for row in s]))
+                    nexts.append(swap((l,c), (l+1,c), [row[:] for row in state.copy()]))
                 if c > 0 and state[l][c-1] == ' ':
                     #can move left
-                    operators.append(lambda s, l=l, c=c: swap((l,c), (l,c-1), [row[:] for row in s]))
+                    nexts.append(swap((l,c), (l,c-1), [row[:] for row in state.copy()]))
                 if c < len(self.initial[l]) - 1 and state[l][c+1] == ' ':
                     #can move right
-                    operators.append(lambda s, l=l, c=c: swap((l,c), (l,c+1), [row[:] for row in s]))
+                    nexts.append(swap((l,c), (l,c+1), [row[:] for row in state.copy()]))
 
-        return operators
+        return nexts
 
-    def get_sum_distances(self, state):
+    def h(self, _, state):
         
         def find_value_position(v):
             for l in range(len(self.goal)):
@@ -51,32 +56,30 @@ class Puzzle:
                 distances.append(abs(i-l) + abs(j-c))
         return sum(distances)
 
-    def next_states(self, state):
-        return list(map(lambda op: op(state), self.gen_operators(state)))
+    def check_goal(self, state):
+        return state == self.goal
 
     def run_puzzle_a_star(self):
         return searches.a_star(self.initial, 
                                 self.next_states, 
-                                lambda x: x==self.goal,
-                                lambda s,x: self.get_sum_distances(x),
-                                lambda s,x: 1)
+                                self.check_goal,
+                                self.h,
+                                self.g)
 
     def run_puzzle_greedy(self):
         return searches.greedy_bf(self.initial, 
                                 self.next_states, 
-                                lambda x: x == self.goal,
-                                lambda s,x: 1)
+                                self.check_goal,
+                                self.h)
 
-a = Puzzle([[1,2,3],
-            [4,5,8],
-            [7,' ',6]], [[1,2,3],[4,5,6],[7,8,' ']])
+if __name__ == "__main__":
+        
+    a = Puzzle([[1,2,3],
+                [' ',6,4],
+                [8,7,5]], [[1,2,3],[8,' ',4],[7,6,5]])
+    
+    Runner.run_a_star(a)
 
-'''
-for i in a.next_states([[1,2,3],[' ',6,4],[8,7,5]]):
-    Puzzle.show_state(i)
-'''
+    Runner.run_greedy_bf(a)
 
-b = a.run_puzzle_a_star()
-print("Intermediary states:")
-for i in b:
-    Puzzle.show_state(i)
+    

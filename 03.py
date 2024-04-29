@@ -1,4 +1,4 @@
-import searches
+from Runner import Runner
 from Problem import Problem
 
 class Farm(Problem):
@@ -58,13 +58,6 @@ class Farm(Problem):
             return True
         return False
 
-    def run_farm(self):
-        return searches.breadth_first(self.initial, self.next_states, self.check_goal)
-
-
 if __name__ == '__main__':
     a = Farm()
-    path = a.run_farm()
-    path = zip(path, path[1:])
-    for s in path:
-        print(a.show_transition(s[0], s[1]))
+    Runner.run_breadth_first(a)

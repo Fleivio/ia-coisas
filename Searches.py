@@ -5,19 +5,23 @@ from Node import Node
 T = TypeVar('T')
 
 def breadth_first(initial: T, transitions: Callable[T, List[T]], checkGoal: Callable[T, bool]) -> List[T]:
-    queue = Queue(elements=[(initial, [initial])],
-                 idKey=lambda x: x[0])
+    queue = Queue(elements=[Node(initial, [initial])],
+                 idKey=lambda x: x.state,
+                 sortingKey=lambda x: 1)
     visited = []
 
     while queue.elements:
-        (node, nodepath) = queue.get()
+        node = queue.get()
+        nodepath = node.path
+        node = node.state
 
         visited.append(node)
 
         print("------------", node)
 
         print("Expanding", node)
-        print("Queue", queue)
+        print("Queue")
+        queue.print_queue()
         print("Visited", visited)
         
         if checkGoal(node):
@@ -26,7 +30,7 @@ def breadth_first(initial: T, transitions: Callable[T, List[T]], checkGoal: Call
 
         for derivated_state in transitions(node):
             if derivated_state not in visited:
-                queue.put((derivated_state, nodepath + [derivated_state]))
+                queue.put(Node(derivated_state, nodepath + [derivated_state]))
 
     return []
 
@@ -59,7 +63,7 @@ def greedy_bf(initial: T,
                     ) -> List[T]:
     visited = []
     queue = Queue([Node(state=initial, path=[initial], heuristic=0)],
-                  sortingKey=lambda x: x.heuristic,
+                  sortingKey=lambda x: x.f,
                   idKey=lambda x: x.state)
 
     while queue.elements:
@@ -80,7 +84,7 @@ def greedy_bf(initial: T,
         
         print("----------------")
         print("Expanding", state, new_states_)
-        print(str(queue))
+        queue.print_queue()
         
 
     return []
@@ -105,6 +109,7 @@ def a_star(initial: T,
             print("Expanding", state, "Goal reached")
             return path
 
+
         new_states_ = list(transitions(state))
         new_states = list(map(lambda s: Node(s, path=path+[s],
                             heuristic=h(state, s), 
@@ -114,8 +119,7 @@ def a_star(initial: T,
 
         print("----------------")
         print("Expanding", state, new_states_)
-        print(str(queue))
-
+        queue.print_queue()
 
 
 if __name__ == '__main__':

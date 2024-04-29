@@ -1,4 +1,4 @@
-import searches
+from Runner import Runner
 from Problem import Problem
 
 routes = {
@@ -36,11 +36,8 @@ class Flights2(Problem):
         self.routes = routes
         self.heuristic = heuristic
 
-    def operators(self):
-        pass
-    
-    def check_valid_transition(self, state, new_state):
-        pass
+    def show_transition(self, state, new_state):
+        return f"De {state} para {new_state}"
 
     def check_goal(self, state):
         return state == self.destination
@@ -50,22 +47,15 @@ class Flights2(Problem):
             return [k for k in self.routes.keys() if state in self.routes[k]]
         return list(self.routes[state].keys()) + [k for k in self.routes.keys() if state in self.routes[k]]
 
-    def show_transition(self, state, new_state):
-        for r in self.routes[state]:
-            if r == new_state:
-                return str(state) + ' ->> ' + str(new_state)
-
     def g(self, fromSt, toSt):
         if fromSt in self.routes.keys() and toSt in self.routes[fromSt]:
             return self.routes[fromSt][toSt]
         else:
             return self.routes[toSt][fromSt]
 
-    def h(self, state):
+    def h(self, _, state):
         return self.heuristic[state]
-
-    def run_flights(self):
-        return searches.greedy_bf(self.initial, self.next_states, self.check_goal, lambda s,x: self.h(x))
-
-a = Flights2('A','K', routes, heuristic)
-print(a.run_flights())
+        
+if __name__ == '__main__':
+    a = Flights2('A','K', routes, heuristic)
+    Runner.run_greedy_bf(a)

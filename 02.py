@@ -1,4 +1,4 @@
-import searches
+from Runner import Runner
 from Problem import Problem
 
 class Jars(Problem):
@@ -59,16 +59,9 @@ class Jars(Problem):
 
     def check_valid_transition(self, _, state):
         return True
-    
-    def run_jars(self):
-        return searches.breadth_first(self.initial, self.next_states, self.goal)
 
 
 if __name__ == '__main__':
     jars = Jars()
     
-    path = jars.run_jars()
-    path = zip(path, path[1:])
-
-    for (i,j) in path:
-        print(jars.show_transition(i,j))
+    Runner.run_breadth_first(jars)

@@ -1,4 +1,4 @@
-import searches
+from Runner import Runner
 from Problem import Problem
 
 routes = {
@@ -24,49 +24,29 @@ routes = {
 }
 
 class Flights(Problem):
-    def __init__(self, origin, destination, routes):
-        self.origin = origin
+    def __init__(self, initial, destination, routes):
+        self.initial = initial
         self.destination = destination
         self.routes = routes
 
-    def operators(self):
-        pass
-    
-    def check_valid_transition(self, state, new_state):
-        pass
-    
+    def show_transition(self, state, new_state):
+        return f"De {state} para {new_state}"
+
     def check_goal(self, state):
         return state == self.destination
-
-    def show_transition(self, state, new_state):
-        for r in self.routes:
-            if self.routes[r][0] == state and self.routes[r][1] == new_state:
-                return str(r) + ": " + str(state) + ' ->> ' + str(new_state)
 
     def next_states(self, state):
         return [self.routes[r][1] for r in self.routes if self.routes[r][0] == state]
 
     def run_flights(self, runner):
-        return runner(self.origin, self.next_states, lambda x: x == self.destination)
+        return runner(self.initial, self.next_states, lambda x: x == self.destination)
 
 if __name__ == '__main__':
     a = Flights('A','J', routes)
 
-    print("Busca em Profundidade:")
-    print("----------------------")
+    Runner.run_depth_first(a)
 
-    path = a.run_flights(searches.depth_first)
-    path = zip(path, path[1:])
-    for (i,j) in path:
-        print(a.show_transition(i,j))
-    
-    print("Busca em Largura:")
-    print("----------------------")
-
-    path = a.run_flights(searches.breadth_first)
-    path = zip(path, path[1:])
-    for (i,j) in path:
-        print(a.show_transition(i,j))
+    Runner.run_breadth_first(a)
 
 
     

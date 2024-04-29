@@ -1,4 +1,4 @@
-import searches
+from Runner import Runner
 from Problem import Problem
 
 class Cannibals(Problem):
@@ -57,8 +57,4 @@ class Cannibals(Problem):
 
 if __name__ == '__main__':
     problem = Cannibals()
-
-    path = problem.run_canibais()
-    path = zip(path, path[1:])
-    for (i,j) in path:
-        print(problem.show_transition(i,j))
+    Runner.run_breadth_first(problem)
