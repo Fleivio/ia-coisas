@@ -2,7 +2,7 @@ from Runner import Runner
 from Problem import Problem
 
 class Puzzle(Problem):
-    def __init__(self, initial, goal):
+    def __init__(self, initial, goal=[[1,2,3], [8,' ',4], [7,6,5]]):
         self.initial = initial
         self.goal = goal
 
@@ -59,24 +59,11 @@ class Puzzle(Problem):
     def check_goal(self, state):
         return state == self.goal
 
-    def run_puzzle_a_star(self):
-        return searches.a_star(self.initial, 
-                                self.next_states, 
-                                self.check_goal,
-                                self.h,
-                                self.g)
-
-    def run_puzzle_greedy(self):
-        return searches.greedy_bf(self.initial, 
-                                self.next_states, 
-                                self.check_goal,
-                                self.h)
-
 if __name__ == "__main__":
         
     a = Puzzle([[1,2,3],
                 [' ',6,4],
-                [8,7,5]], [[1,2,3],[8,' ',4],[7,6,5]])
+                [8,7,5]])
     
     Runner.run_a_star(a)
 
