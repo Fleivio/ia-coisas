@@ -1,7 +1,7 @@
 import searches
+from Problem import Problem
 
-
-class Cannibals():
+class Cannibals(Problem):
     
     def __init__(self, size=3, boat_size=2):
         self.initial = (size, size, 1)
@@ -9,7 +9,10 @@ class Cannibals():
         self.size = size
         self.boat_size = boat_size
 
-    def is_valid(self, state):
+    def check_goal(self, possible_goal):
+        return possible_goal == self.goal
+
+    def check_valid_transition(self, _, state):
         (m, c, _) = state
 
         size = self.size
@@ -22,7 +25,7 @@ class Cannibals():
             return False
         return True
 
-    def gen_operators(self):
+    def operators(self):
 
         def check_valid_boat(i,j):
             return i+j <= self.boat_size and i+j>0
@@ -49,21 +52,8 @@ class Cannibals():
                 " missionarios e " + str(abs(c - c2)) + " canibais para a " +
                 ("esquerda" if b == 1 else "direita") + " ->> " + str(new_state))
 
-    def next_states(self, state):
-
-        possible_next = list(map (lambda f: f(state), self.gen_operators()))
-        filtered_next = list(filter(lambda k: self.is_valid(k), possible_next))
-
-        return filtered_next
-
     def run_canibais(self):
         return searches.breadth_first(self.initial, self.next_states, lambda x: x == self.goal)
-
-def canibal_10_4():
-    cn = Cannibals(10, 4)
-
-    for i in cn.run_canibais():
-        print(i)
 
 if __name__ == '__main__':
     problem = Cannibals()

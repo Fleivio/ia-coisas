@@ -1,4 +1,5 @@
 import searches
+from Problem import Problem
 
 routes = {
     1: ('A','B'),
@@ -22,22 +23,31 @@ routes = {
     19: ('N','B')
 }
 
-class Flights():
+class Flights(Problem):
     def __init__(self, origin, destination, routes):
         self.origin = origin
         self.destination = destination
         self.routes = routes
 
-    def gen_actions(self, state):
-        return [self.routes[r][1] for r in self.routes if self.routes[r][0] == state]
+    def operators(self):
+        pass
+    
+    def check_valid_transition(self, state, new_state):
+        pass
+    
+    def check_goal(self, state):
+        return state == self.destination
 
     def show_transition(self, state, new_state):
         for r in self.routes:
             if self.routes[r][0] == state and self.routes[r][1] == new_state:
                 return str(r) + ": " + str(state) + ' ->> ' + str(new_state)
 
+    def next_states(self, state):
+        return [self.routes[r][1] for r in self.routes if self.routes[r][0] == state]
+
     def run_flights(self, runner):
-        return runner(self.origin, self.gen_actions, lambda x: x == self.destination)
+        return runner(self.origin, self.next_states, lambda x: x == self.destination)
 
 if __name__ == '__main__':
     a = Flights('A','J', routes)

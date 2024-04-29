@@ -1,35 +1,48 @@
+import searches
+from Problem import Problem
 
 routes = {
-    1: ('A','B',1),
-    2: ('A','C',9),
-    3: ('D','A',4),
-    4: ('B','C',7),
-    5: ('B','E',6),
-    6: ('B','F',1),
-    7: ('C','F',7),
-    8: ('D','F',4),
-    9: ('D','G',5),
-    10: ('E','H',9),
-    11: ('F','H',4),
-    12: ('G','H',1)
+    'A': {'B':1, 'C':9, 'D':4},
+    'B': {'C':7, 'E':6},
+    'C': {'F':7},
+    'D': {'F':4, 'G':5},
+    'E': {'H':9},
+    'F': {'H':4},
+    'G': {'H':1}
 }
 
-class Flights2():
+class Flights2(Problem):
 
     def __init__(self, initial, destination, routes):
         self.initial = initial
-        self.destitination = destination
+        self.destination = destination
         self.routes = routes
 
-    def get_routes(self, state):
-        return ([(self.routes[r][1], r) for r in self.routes if self.routes[r][0] == state]
-                + [(self.routes[r][0], r) for r in self.routes if self.routes[r][1] == state])
+    def operators(self):
+        pass
+    
+    def check_valid_transition(self, state, new_state):
+        pass
+    
+    def check_goal(self, state):
+        return state == self.destination
 
-    def get_routes_cost(self, state):
-        return ([(self.routes[r][1], r, self.routes[r][2]) for r in self.routes if self.routes[r][0] == state]
-                + [(self.routes[r][0], r, self.routes[r][2]) for r in self.routes if self.routes[r][1] == state])
+    def show_transition(self, state, new_state):
+        for r in self.routes[state]:
+            if r == new_state:
+                return str(state) + ' ->> ' + str(new_state)
+
+    def h(self, fromSt, toSt):
+        if fromSt in self.routes.keys() and toSt in self.routes[fromSt]:
+            return self.routes[fromSt][toSt]
+        else:
+            return self.routes[toSt][fromSt]    
+            
+    def next_states(self, state):
+        return list(self.routes[state].keys()) + [k for k in self.routes.keys() if state in self.routes[k]]
+
+    def run_flights(self):
+        return searches.greedy_bf(self.initial, self.next_states, self.check_goal, self.h)
 
 a = Flights2('A','H', routes)
-print(a.get_routes('H'))
-print("---------")
-print(a.get_routes_cost('H'))
+print(a.run_flights())

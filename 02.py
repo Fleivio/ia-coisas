@@ -1,14 +1,17 @@
 import searches
+from Problem import Problem
 
-class Jars():
+class Jars(Problem):
         
     def __init__(self, sizes=[3,4], goal_check=lambda x: x[1] == 2):
         self.initial = [0] * len(sizes)
         self.goal = goal_check
         self.sizes = sizes
 
-    def show_transition(self, state, new_state):
+    def check_goal(self, possible_goal):
+        return self.goal(possible_goal)
 
+    def show_transition(self, state, new_state):
         diffs = []
 
         for i in range(len(state)):
@@ -26,7 +29,7 @@ class Jars():
             else:
                 return "Transferir de " + str(diffs[0]) + " para " + str(diffs[1]) + " ->> " + str(new_state)
 
-    def gen_operators(self):
+    def operators(self):
 
         def fill_jar(index, states):
             states[index] = self.sizes[index]
@@ -54,11 +57,9 @@ class Jars():
                     operators.append(lambda s, i=i, j=j: transfer(i, j, s.copy()))
         return operators
 
-    def next_states(self, state):
-        
-        possible_next = list(map(lambda f: f(state.copy()), self.gen_operators()))
-        return possible_next
-
+    def check_valid_transition(self, _, state):
+        return True
+    
     def run_jars(self):
         return searches.breadth_first(self.initial, self.next_states, self.goal)
 

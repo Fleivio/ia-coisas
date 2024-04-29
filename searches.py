@@ -1,27 +1,36 @@
 from typing import TypeVar, Callable, List, Tuple
+from Queue import Queue
+from Node import Node
 
 T = TypeVar('T')
 
-def breadth_first(initial: T, transitions: Callable[T, List[Tuple[T]]], checkGoal: Callable[T, bool]) -> List[T]:
-    queue = [(initial, [initial])]
+def breadth_first(initial: T, transitions: Callable[T, List[T]], checkGoal: Callable[T, bool]) -> List[T]:
+    queue = Queue(elements=[(initial, [initial])],
+                 idKey=lambda x: x[0])
     visited = []
 
-    while queue:
-        (node, nodepath) = queue.pop(0)
-            
+    while queue.elements:
+        (node, nodepath) = queue.get()
+
         visited.append(node)
+
+        print("------------", node)
+
+        print("Expanding", node)
+        print("Queue", queue)
+        print("Visited", visited)
         
         if checkGoal(node):
+            print("Goal reached")
             return nodepath
 
         for derivated_state in transitions(node):
             if derivated_state not in visited:
-                queue.append((derivated_state, nodepath + [derivated_state]))
+                queue.put((derivated_state, nodepath + [derivated_state]))
 
-    return queue
+    return []
 
-
-def depth_first(initial: T, transitions: Callable[T, List[Tuple[T]]], checkGoal: Callable[[T], bool]) -> List[T]:
+def depth_first(initial: T, transitions: Callable[T, List[T]], checkGoal: Callable[[T], bool]) -> List[T]:
     visited = []
 
     def search(state):
@@ -42,38 +51,110 @@ def depth_first(initial: T, transitions: Callable[T, List[Tuple[T]]], checkGoal:
         return []
 
     return search(initial)
-'''
-def greedy_search(initial: T, 
-                    transitions: Callable[T, List[Tuple[T, S]]],
+
+def greedy_bf(initial: T, 
+                    transitions: Callable[T, List[T]],
                     checkGoal: Callable[T, bool],
-                    heuristic: Callable[T, int]
-                    ) -> List[S]:
+                    heuristic: Callable[[T, T], float],
+                    ) -> List[T]:
     visited = []
+    queue = Queue([Node(state=initial, path=[initial], heuristic=0)],
+                  sortingKey=lambda x: x.heuristic,
+                  idKey=lambda x: x.state)
+
+    while queue.elements:
+        nd = queue.get()
+        state = nd.state
+        path = nd.path
+
+        if checkGoal(state):
+            print("Expanding", state, "Goal reached")
+            return path
+
+        visited.append(state)
+
+        new_states_ = list(filter(lambda x: x not in visited, transitions(state)))
+        new_states = list(map(lambda s: Node(s, path=path+[s], heuristic=heuristic(state, s)), new_states_))
+
+        queue.put_s(new_states)
+        
+        print("----------------")
+        print("Expanding", state, new_states_)
+        print(str(queue))
+        
+
+    return []
+
+def a_star(initial: T,
+           transitions: Callable[[T], List[T]],
+           check_goal: Callable[[T], bool],
+           h: Callable[[T, T], float],
+           g: Callable[[T, T], float]) -> List[T]:
+
+    queue = Queue([Node(initial, path=[initial], heuristic=h(initial,initial), path_cost=0)],
+                    sortingKey=lambda x: x.f)
+
+    while queue.elements:
+        nd = queue.get()
+        state = nd.state
+        path = nd.path
+
+        path_cost = nd.path_cost
+
+        if check_goal(state):
+            print("Expanding", state, "Goal reached")
+            return path
+
+        new_states_ = list(transitions(state))
+        new_states = list(map(lambda s: Node(s, path=path+[s],
+                            heuristic=h(state, s), 
+                            path_cost=path_cost+g(state, s)), new_states_))
+
+        queue.put_s(new_states)
+
+        print("----------------")
+        print("Expanding", state, new_states_)
+        print(str(queue))
+
+
 
 if __name__ == '__main__':
-
-    def tr(s):
-        match s:
-            case "o":
-                return ["h","v","m"]
-            case "h":
-                return ["e","l"]
-            case "v":
-                return ["t","x"]
-            case "h":
-                return ["h","i"]
-            case "v":
-                return ["u","w"]
-            case "e":
-                return ["d","f"]
-            case "l":
-                return ["k","m"]
+    def tr(a, b):
+        match (a,b):
+            case ("a","b"):
+                return 6
+            case ("c","b"):
+                return 3
+            case ("a","c"):
+                return 2
+            case ("c","g"):
+                return 15
+            case ("b","g"):
+                return 7
             case _:
-                return []
+                return tr(b,a)
+    
+    def h(a):
+        match a:
+            case "a":
+                return 10
+            case "b":
+                return 2
+            case "c":
+                return 7
+            case "g":
+                return 0
 
-    init = "o"
-    final = "m"
+    def trs(a):
+        match a:
+            case "a":
+                return ["b","c"]
+            case "b":
+                return ["g","c","a"]
+            case "c":
+                return ["g","b","a"]
+            case "g":
+                return ["b","c"]
 
-    print (breadth_first(init, lambda x: list(map(lambda y: (y,y), tr(x))), lambda x: x == final))
-    print (depth_first(init, lambda x: list(map(lambda y: (y,y), tr(x))), lambda x: x == final))
-'''
+    a = a_star("a", trs, lambda x: x == "g", lambda s,x: h(x), tr)
+    print(a)
