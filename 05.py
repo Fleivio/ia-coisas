@@ -37,7 +37,7 @@ class Flights2(Problem):
 if __name__ == '__main__':
     print("QUESTÃO 5: VOOS\n")
     a = Flights2('A','H', routes)
-    Runner.run_greedy_acc(a)
+    Runner.run_greedy_bf(a)
     
 
 
