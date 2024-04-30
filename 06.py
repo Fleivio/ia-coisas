@@ -47,13 +47,13 @@ class Flights2(Problem):
             return [k for k in self.routes.keys() if state in self.routes[k]]
         return list(self.routes[state].keys()) + [k for k in self.routes.keys() if state in self.routes[k]]
 
-    def g(self, fromSt, toSt):
+    def transition_cost(self, fromSt, toSt):
         if fromSt in self.routes.keys() and toSt in self.routes[fromSt]:
             return self.routes[fromSt][toSt]
         else:
             return self.routes[toSt][fromSt]
 
-    def h(self, _, state):
+    def heuristic(self, _, state):
         return self.heuristic[state]
         
 if __name__ == '__main__':

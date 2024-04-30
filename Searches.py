@@ -1,46 +1,46 @@
-from typing import TypeVar, Callable, List, Tuple
 from Queue import Queue
 from Node import Node
 
-T = TypeVar('T')
 
-def breadth_first(initial: T, transitions: Callable[T, List[T]], checkGoal: Callable[T, bool]) -> List[T]:
-    queue = Queue(elements=[Node(initial, [initial])],
+def breadth_first(initial, transitions, checkGoal):
+    queue = Queue(elements=[Node(initial)],
                  idKey=lambda x: x.state,
                  sortingKey=lambda x: 1)
-    visited = []
+    visited = [initial]
+
+    if checkGoal(initial):
+        return [initial]
 
     while queue.elements:
         node = queue.get()
-        nodepath = node.path
-        node = node.state
+        state = node.state
 
-        visited.append(node)
+        #visited.append(state)
 
-        print("------------", node)
+        print("------------")
 
-        print("Expanding", node)
+        print("Expanding", state)
         print("Queue")
         queue.print_queue()
         print("Visited", visited)
         
-        if checkGoal(node):
-            print("Goal reached")
-            return nodepath
-
-        for derivated_state in transitions(node):
-            if derivated_state not in visited:
-                queue.put(Node(derivated_state, nodepath + [derivated_state]))
+        for child in transitions(state):
+            
+            if checkGoal(child):
+                print("Goal reached")
+                return node.get_path() + [child]
+            if child not in visited:
+                visited.append(child)
+                queue.put(Node(child, node))
 
     return []
 
-def depth_first(initial: T, transitions: Callable[T, List[T]], checkGoal: Callable[[T], bool]) -> List[T]:
+def depth_first(initial, transitions, checkGoal):
     visited = []
 
     def search(state):
-        if checkGoal(state):
+        if state in visited:
             return []
-
         visited.append(state)
 
         for derivated_state in transitions(state):
@@ -56,73 +56,118 @@ def depth_first(initial: T, transitions: Callable[T, List[T]], checkGoal: Callab
 
     return search(initial)
 
-def greedy_bf(initial: T, 
-                    transitions: Callable[T, List[T]],
-                    checkGoal: Callable[T, bool],
-                    heuristic: Callable[[T, T], float],
-                    ) -> List[T]:
-    visited = []
-    queue = Queue([Node(state=initial, path=[initial], heuristic=0)],
-                  sortingKey=lambda x: x.f,
-                  idKey=lambda x: x.state)
+def a_star(initial,
+           transitions,
+           check_goal,
+           h,
+           g):
+
+    queue = Queue([Node(initial, heuristic=0, path_cost=0)],
+                    sortingKey=lambda x: x.f,
+                    idKey=lambda x: x.state)
+
+    visited = Queue([], sortingKey=lambda x: f.f, idKey=lambda x: x.state)
 
     while queue.elements:
-        nd = queue.get()
-        state = nd.state
-        path = nd.path
+        node = queue.get()
+        state = node.state
+
+        path_cost = node.path_cost
+
+        if check_goal(state):
+            print("Expanding", state, "Goal reached")
+            return node.get_path()
+
+
+        new_states_ = transitions(state)
+
+        for s in new_states_:
+            s_node = Node(s, parent=node, heuristic=h(state, s), path_cost=path_cost+g(state, s))
+            if visited.has(s):
+                if visited.has_better(s):
+                    continue
+                else:
+                    _ = visited.get_by_key(s)
+                    queue.put(s_node)
+            else:
+                queue.put(s_node)
+
+        print("----------------")
+        print("Expanding", state, new_states_)
+        queue.print_queue()
+
+def greedy_bf(initial, 
+                    transitions,
+                    check_goal,
+                    h
+                    ):
+    queue = Queue([Node(initial, heuristic=0, path_cost=0)],
+                    sortingKey=lambda x: x.f,
+                    idKey=lambda x: x.state)
+
+    visited = Queue([], sortingKey=lambda x: f.f, idKey=lambda x: x.state)
+
+    while queue.elements:
+        node = queue.get()
+        state = node.state
+
+        path_cost = node.path_cost
+
+        if check_goal(state):
+            print("Expanding", state, "Goal reached")
+            return node.get_path()
+
+
+        new_states_ = transitions(state)
+
+        for s in new_states_:
+            s_node = Node(s, parent=node, heuristic=h(state, s))
+            if visited.has(s):
+                if visited.has_better(s):
+                    continue
+                else:
+                    _ = visited.get_by_key(s)
+                    queue.put(s_node)
+            else:
+                queue.put(s_node)
+
+        print("----------------")
+        print("Expanding", state, new_states_)
+        queue.print_queue()
+
+#nao funciona
+'''def greedy_bf(initial, 
+                    transitions,
+                    checkGoal,
+                    h,
+                    ):
+    queue = Queue([Node(state=initial, heuristic=0)],
+                   sortingKey=lambda x: x.f,
+                   idKey=lambda x: x.state)
+    visited = []
+
+    while queue.elements:
+        node = queue.get()
+        state = node.state
 
         if checkGoal(state):
             print("Expanding", state, "Goal reached")
-            return path
+            return node.get_path()
 
         visited.append(state)
 
         new_states_ = list(filter(lambda x: x not in visited, transitions(state)))
-        new_states = list(map(lambda s: Node(s, path=path+[s], heuristic=heuristic(state, s)), new_states_))
+        new_states = list(map(lambda s: Node(s, parent=node, heuristic=h(state, s)), new_states_))
 
         queue.put_s(new_states)
         
         print("----------------")
         print("Expanding", state, new_states_)
         queue.print_queue()
-        
 
-    return []
+    return []'''
 
-def a_star(initial: T,
-           transitions: Callable[[T], List[T]],
-           check_goal: Callable[[T], bool],
-           h: Callable[[T, T], float],
-           g: Callable[[T, T], float]) -> List[T]:
-
-    queue = Queue([Node(initial, path=[initial], heuristic=h(initial,initial), path_cost=0)],
-                    sortingKey=lambda x: x.f)
-
-    while queue.elements:
-        nd = queue.get()
-        state = nd.state
-        path = nd.path
-
-        path_cost = nd.path_cost
-
-        if check_goal(state):
-            print("Expanding", state, "Goal reached")
-            return path
-
-
-        new_states_ = list(transitions(state))
-        new_states = list(map(lambda s: Node(s, path=path+[s],
-                            heuristic=h(state, s), 
-                            path_cost=path_cost+g(state, s)), new_states_))
-
-        queue.put_s(new_states)
-
-        print("----------------")
-        print("Expanding", state, new_states_)
-        queue.print_queue()
-
-
-if __name__ == '__main__':
+def test1():
     def tr(a, b):
         match (a,b):
             case ("a","b"):
@@ -162,3 +207,6 @@ if __name__ == '__main__':
 
     a = a_star("a", trs, lambda x: x == "g", lambda s,x: h(x), tr)
     print(a)
+
+if __name__ == '__main__':
+    test1()

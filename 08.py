@@ -40,7 +40,7 @@ class Puzzle(Problem):
 
         return nexts
 
-    def h(self, _, state):
+    def heuristic(self, _, state):
         
         def find_value_position(v):
             for l in range(len(self.goal)):

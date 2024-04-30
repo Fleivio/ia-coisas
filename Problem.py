@@ -17,7 +17,7 @@ class Problem():
         pass
 
     def sum_costs(self, state_list):
-        ziped = map (lambda x: self.g(x[0], x[1]), list(zip(state_list, state_list[1:])))
+        ziped = map (lambda x: self.transition_cost(x[0], x[1]), list(zip(state_list, state_list[1:])))
         return sum(list(ziped))
 
     def show_transitions_and_cost(self, path):
@@ -26,10 +26,10 @@ class Problem():
             print(self.show_transition(i,j))
         print("Total Cost:", self.sum_costs(path))
 
-    def h(self, prev_state, next_state):
-        return 1
+    def heuristic(self, prev_state, next_state):
+        return 0
 
-    def g(self, prev_state, next_state):
+    def transition_cost(self, prev_state, next_state):
         return 1
 
     def next_states(self, state):

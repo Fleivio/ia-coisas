@@ -52,9 +52,7 @@ class Cannibals(Problem):
                 " missionarios e " + str(abs(c - c2)) + " canibais para a " +
                 ("esquerda" if b == 1 else "direita") + " ->> " + str(new_state))
 
-    def run_canibais(self):
-        return searches.breadth_first(self.initial, self.next_states, lambda x: x == self.goal)
-
 if __name__ == '__main__':
+    print("QUESTÂO 1: CANIBAIS E MISSIONÁRIOS\n")
     problem = Cannibals()
     Runner.run_breadth_first(problem)

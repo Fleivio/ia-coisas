@@ -62,6 +62,7 @@ class Jars(Problem):
 
 
 if __name__ == '__main__':
+    print("QUESTÂO 2: JARRAS\n")
     jars = Jars()
     
     Runner.run_breadth_first(jars)

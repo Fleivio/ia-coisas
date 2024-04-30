@@ -42,6 +42,7 @@ class Flights(Problem):
         return runner(self.initial, self.next_states, lambda x: x == self.destination)
 
 if __name__ == '__main__':
+    print("QUESTÃO 4: VOOS\n")
     a = Flights('A','J', routes)
 
     Runner.run_depth_first(a)

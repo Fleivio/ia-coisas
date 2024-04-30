@@ -59,5 +59,6 @@ class Farm(Problem):
         return False
 
 if __name__ == '__main__':
+    print("QUESTÃO 3: FAZENDA\n")
     a = Farm()
-    Runner.run_breadth_first(a)
+    Runner.run_depth_first(a)

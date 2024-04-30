@@ -37,3 +37,20 @@ class Queue:
                     continue
                 self.elements.pop(i)
 
+    def has_better(self, state):
+        for e in self.elements:
+            if self.idKey(e) == self.idKey(state) and self.sortingKey(e) < self.sortingKey(state):
+                return True
+        return False
+
+    def get_by_key(self, key):
+        for i in range(len(self.elements)):
+            if self.idKey(self.elements[i]) == key:
+                return self.elements.pop(i)
+        return None
+
+    def has(self, state):
+        if state in list(map(self.idKey, self.elements)):
+            return True
+        return False
+

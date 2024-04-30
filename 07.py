@@ -3,14 +3,16 @@ from Problem import Problem
 
 routes = {
     'A': {'B':7, 'C':9, 'D':3},
-    'B': {'F':3, 'I':4},
-    'C': {'J':5},
-    'D': {'E':1},
-    'F': {'G':2},
-    'G': {'H':3},
-    'I': {'K':5},
-    'J': {'L':6},
-    'K': {'L':4},
+    'B': {'A':7, 'F':3, 'I':4},
+    'C': {'A':9, 'J':5},
+    'D': {'A':3, 'E':1},
+    'F': {'B':3, 'G':2},
+    'G': {'F':2, 'H':3},
+    'H': {'G':3},
+    'I': {'B':4, 'K':5},
+    'J': {'C':5, 'L':6},
+    'K': {'L':4, 'I':5},
+    'L': {'K':4, 'J':6},
 }
 
 heuristic = {
@@ -34,7 +36,7 @@ class Flights2(Problem):
         self.initial = initial
         self.destination = destination
         self.routes = routes
-        self.heuristic = heuristic
+        self.h = heuristic
 
     def check_goal(self, possible_goal):
         return possible_goal == self.destination
@@ -47,22 +49,14 @@ class Flights2(Problem):
             return [k for k in self.routes.keys() if state in self.routes[k]]
         return list(self.routes[state].keys()) + [k for k in self.routes.keys() if state in self.routes[k]]
 
-    def g(self, fromSt, toSt):
-        if fromSt in self.routes.keys() and toSt in self.routes[fromSt]:
-            return self.routes[fromSt][toSt]
-        else:
-            return self.routes[toSt][fromSt]
+    def transition_cost(self, fromSt, toSt):
+        return self.routes[fromSt][toSt]
 
-    def h(self, _, state):
-        return self.heuristic[state]
+    def heuristic(self, _, state):
+        return self.h[state]
 
-    def run_flights(self):
-        return searches.a_star(self.initial, #inicial
-                                self.next_states, #gerador de novos nós
-                                self.check_goal, #verificador de objetivo
-                                self.h,  #heuristica
-                                self.g) #custo da rota
 
 if __name__ == '__main__':
     a = Flights2('A','K', routes, heuristic)
+    Runner.run_greedy_bf(a)
     Runner.run_a_star(a)
