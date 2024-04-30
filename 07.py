@@ -55,6 +55,6 @@ class Flights2(Problem):
 
 
 if __name__ == '__main__':
-    a = Flights2('A','C', routes, heuristic)
+    a = Flights2('A','K', routes, heuristic)
     Runner.run_greedy_bf(a)
     Runner.run_a_star(a)

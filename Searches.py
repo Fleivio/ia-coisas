@@ -69,7 +69,7 @@ def a_star(initial,
                     sortingKey=lambda x: x.f,
                     idKey=lambda x: x.state)
 
-    visited = Queue([], sortingKey=lambda x: f.f, idKey=lambda x: x.state)
+    visited = Queue([], sortingKey=lambda x: x.f, idKey=lambda x: x.state)
 
     while queue.elements:
         node = queue.get()
@@ -81,13 +81,13 @@ def a_star(initial,
             print("Expanding", state, "Goal reached")
             return node.get_path()
 
-
+        visited.put(node)
         new_states_ = transitions(state)
 
         for s in new_states_:
             s_node = Node(s, parent=node, heuristic=h(state, s), path_cost=path_cost+g(state, s))
             if visited.has(s):
-                if visited.has_better(s):
+                if visited.has_better_eq(s_node):
                     continue
                 else:
                     _ = visited.get_by_key(s)
@@ -99,11 +99,7 @@ def a_star(initial,
         print("Expanding", state, new_states_)
         queue.print_queue()
 
-def greedy_bf(initial, 
-                    transitions,
-                    check_goal,
-                    h
-                    ):
+def greedy_acc(initial, transitions, check_goal, g):
     queue = Queue([Node(initial, heuristic=0, path_cost=0)],
                     sortingKey=lambda x: x.f,
                     idKey=lambda x: x.state)
@@ -114,6 +110,39 @@ def greedy_bf(initial,
         node = queue.get()
         state = node.state
         path_cost = node.path_cost
+
+        if check_goal(state):
+            print("Expanding", state, "Goal reached")
+            return node.get_path()
+
+        visited.put(node)
+        new_states_ = transitions(state)
+
+        for s in new_states_:
+            s_node = Node(s, parent=node, heuristic=g(state, s) + node.f)
+            if visited.has(s):
+                if visited.has_better_eq(s_node):
+                    continue
+                else:
+                    _ = visited.get_by_key(s)
+                    queue.put(s_node)
+            else:
+                queue.put(s_node)
+
+        print("----------------")
+        print("Expanding", state, new_states_)
+        queue.print_queue()
+
+def greedy_bf(initial, transitions, check_goal, h):
+    queue = Queue([Node(initial, heuristic=0, path_cost=0)],
+                    sortingKey=lambda x: x.f,
+                    idKey=lambda x: x.state)
+
+    visited = Queue([], sortingKey=lambda x: x.f, idKey=lambda x: x.state)
+
+    while queue.elements:
+        node = queue.get()
+        state = node.state
 
 
         if check_goal(state):
@@ -137,38 +166,6 @@ def greedy_bf(initial,
         print("----------------")
         print("Expanding", state, new_states_)
         queue.print_queue()
-
-#nao funciona
-'''def greedy_bf(initial, 
-                    transitions,
-                    checkGoal,
-                    h,
-                    ):
-    queue = Queue([Node(state=initial, heuristic=0)],
-                   sortingKey=lambda x: x.f,
-                   idKey=lambda x: x.state)
-    visited = []
-
-    while queue.elements:
-        node = queue.get()
-        state = node.state
-
-        if checkGoal(state):
-            print("Expanding", state, "Goal reached")
-            return node.get_path()
-
-        visited.append(state)
-
-        new_states_ = list(filter(lambda x: x not in visited, transitions(state)))
-        new_states = list(map(lambda s: Node(s, parent=node, heuristic=h(state, s)), new_states_))
-
-        queue.put_s(new_states)
-        
-        print("----------------")
-        print("Expanding", state, new_states_)
-        queue.print_queue()
-
-    return []'''
 
 def test1():
     def tr(a, b):

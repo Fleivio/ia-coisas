@@ -34,7 +34,7 @@ class Flights2(Problem):
         self.initial = initial
         self.destination = destination
         self.routes = routes
-        self.heuristic = heuristic
+        self.h = heuristic
 
     def show_transition(self, state, new_state):
         return f"De {state} para {new_state}"
@@ -54,7 +54,7 @@ class Flights2(Problem):
             return self.routes[toSt][fromSt]
 
     def heuristic(self, _, state):
-        return self.heuristic[state]
+        return self.h[state]
         
 if __name__ == '__main__':
     a = Flights2('A','K', routes, heuristic)

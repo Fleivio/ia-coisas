@@ -26,19 +26,18 @@ class Flights2(Problem):
         return f"De {state} para {new_state}"    
 
     def heuristic(self, fromSt, toSt):
-        print(fromSt, toSt)
         return self.routes[fromSt][toSt]
         
     def transition_cost(self, fromSt, toSt):
         return self.heuristic(fromSt, toSt)
 
     def next_states(self, state):
-        return self.routes[state].keys()
+        return list(self.routes[state].keys())
 
 if __name__ == '__main__':
     print("QUESTÃO 5: VOOS\n")
     a = Flights2('A','H', routes)
-    Runner.run_greedy_bf(a)
+    Runner.run_greedy_acc(a)
     
 
 

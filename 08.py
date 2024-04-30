@@ -70,7 +70,3 @@ if __name__ == "__main__":
     Runner.run_a_star(a)
 
     Runner.run_greedy_bf(a)
-
-
-
-    

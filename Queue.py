@@ -17,25 +17,19 @@ class Queue:
             self.put(item)
     
     def put(self, item):
+        for i in self.elements:
+            if self.idKey(i) == self.idKey(item):
+                if self.sortingKey(i) <= self.sortingKey(item):
+                    return
+                else:
+                    self.elements.remove(i)
+
         self.elements.append(item)
-        self.remove_duplicates(item)
+        #self.remove_duplicates(item)
         self.elements = sorted(self.elements, key = self.sortingKey)
     
     def get(self):
         return self.elements.pop(0)
-
-    def remove_duplicates(self, state):
-        def is_better(s1):
-            return self.sortingKey(s1) >= self.sortingKey(state)
-        
-        find_itself = False
-        for i in range(len(self.elements)-1, -1, -1):
-            e = self.elements[i]
-            if self.idKey(e) == self.idKey(state) and is_better(e):
-                if not find_itself and self.sortingKey(e) == self.sortingKey(state):
-                    find_itself = True
-                    continue
-                self.elements.pop(i)
 
     def has_better_eq(self, state):
         for e in self.elements:
