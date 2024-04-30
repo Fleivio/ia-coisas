@@ -65,8 +65,12 @@ if __name__ == "__main__":
                 [' ',6,4],
                 [8,7,5]])
     
+    Runner.run_breadth_first(a)
+
     Runner.run_a_star(a)
 
     Runner.run_greedy_bf(a)
+
+
 
     

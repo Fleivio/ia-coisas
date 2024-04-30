@@ -20,19 +20,19 @@ def breadth_first(initial, transitions, checkGoal):
         print("------------")
 
         print("Expanding", state)
-        print("Queue")
-        queue.print_queue()
-        print("Visited", visited)
-        
+
         for child in transitions(state):
             
             if checkGoal(child):
-                print("Goal reached")
+                print("Goal reached", child)
                 return node.get_path() + [child]
             if child not in visited:
                 visited.append(child)
                 queue.put(Node(child, node))
 
+        print("Queue")
+        queue.print_queue()
+        print("Visited", visited)
     return []
 
 def depth_first(initial, transitions, checkGoal):
@@ -43,14 +43,17 @@ def depth_first(initial, transitions, checkGoal):
             return []
         visited.append(state)
 
-        for derivated_state in transitions(state):
-            if derivated_state not in visited:
-                if checkGoal(derivated_state):
-                    return [state, derivated_state]
-                else:
-                    result = search(derivated_state)
-                    if result:
-                        return [state] + result
+        print("------------")
+        print('Expanding', state)
+        trs = list(filter(lambda x: x not in visited, transitions(state)))
+        print(trs)
+        for derivated_state in trs:
+            if checkGoal(derivated_state):
+                return [state, derivated_state]
+            else:
+                result = search(derivated_state)
+                if result:
+                    return [state] + result
 
         return []
 
@@ -105,25 +108,25 @@ def greedy_bf(initial,
                     sortingKey=lambda x: x.f,
                     idKey=lambda x: x.state)
 
-    visited = Queue([], sortingKey=lambda x: f.f, idKey=lambda x: x.state)
+    visited = Queue([], sortingKey=lambda x: x.f, idKey=lambda x: x.state)
 
     while queue.elements:
         node = queue.get()
         state = node.state
-
         path_cost = node.path_cost
+
 
         if check_goal(state):
             print("Expanding", state, "Goal reached")
             return node.get_path()
 
-
+        visited.put(node)
         new_states_ = transitions(state)
 
         for s in new_states_:
             s_node = Node(s, parent=node, heuristic=h(state, s))
             if visited.has(s):
-                if visited.has_better(s):
+                if visited.has_better_eq(s_node):
                     continue
                 else:
                     _ = visited.get_by_key(s)

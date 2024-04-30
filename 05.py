@@ -30,10 +30,10 @@ class Flights2(Problem):
         return self.routes[fromSt][toSt]
         
     def transition_cost(self, fromSt, toSt):
-        return self.h(fromSt, toSt)
+        return self.heuristic(fromSt, toSt)
 
     def next_states(self, state):
-        return list(self.routes[state].keys()) + [k for k in self.routes.keys() if state in self.routes[k]]
+        return self.routes[state].keys()
 
 if __name__ == '__main__':
     print("QUESTÃO 5: VOOS\n")

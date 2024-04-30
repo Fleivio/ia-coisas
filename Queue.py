@@ -37,9 +37,9 @@ class Queue:
                     continue
                 self.elements.pop(i)
 
-    def has_better(self, state):
+    def has_better_eq(self, state):
         for e in self.elements:
-            if self.idKey(e) == self.idKey(state) and self.sortingKey(e) < self.sortingKey(state):
+            if self.idKey(e) == self.idKey(state) and self.sortingKey(e) <= self.sortingKey(state):
                 return True
         return False
 

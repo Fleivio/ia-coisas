@@ -3,7 +3,6 @@ from Problem import Problem
 
 routes = {
     1: ('A','B'),
-    2: ('A','B'),
     3: ('A','D'),
     4: ('B','E'), 
     5: ('B','F'), 
@@ -45,9 +44,9 @@ if __name__ == '__main__':
     print("QUESTÃO 4: VOOS\n")
     a = Flights('A','J', routes)
 
+    Runner.run_breadth_first(a)
     Runner.run_depth_first(a)
 
-    Runner.run_breadth_first(a)
 
 
     

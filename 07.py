@@ -45,9 +45,7 @@ class Flights2(Problem):
         return f"De {state} para {new_state}"
 
     def next_states(self, state):
-        if state not in self.routes.keys():
-            return [k for k in self.routes.keys() if state in self.routes[k]]
-        return list(self.routes[state].keys()) + [k for k in self.routes.keys() if state in self.routes[k]]
+        return list(self.routes[state].keys()) 
 
     def transition_cost(self, fromSt, toSt):
         return self.routes[fromSt][toSt]
@@ -57,6 +55,6 @@ class Flights2(Problem):
 
 
 if __name__ == '__main__':
-    a = Flights2('A','K', routes, heuristic)
+    a = Flights2('A','C', routes, heuristic)
     Runner.run_greedy_bf(a)
     Runner.run_a_star(a)

@@ -27,7 +27,7 @@ class Problem():
         print("Total Cost:", self.sum_costs(path))
 
     def heuristic(self, prev_state, next_state):
-        return 0
+        return 1
 
     def transition_cost(self, prev_state, next_state):
         return 1
